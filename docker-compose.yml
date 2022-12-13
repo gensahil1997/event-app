@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  events:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    image: events:latest
+    container_name: events
+    ports:
+      - "8000:8000"
+    
+  db:
+    image: mysql:8
+    container_name: events_db
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_USER: events_user
+      MYSQL_PASSWORD: P@ssw0rd
+      MYSQL_DB_HOST: db
