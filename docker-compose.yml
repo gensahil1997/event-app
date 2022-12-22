@@ -2,19 +2,20 @@ version: '3.7'
 services:
   events:
     build:
-      args:
-        user: event
-        uid: 1000
       context: .
       dockerfile: Dockerfile 
     image: events:latest
     container_name: events_app
     ports:
-      - "8000:8000"
+      - "9000:80"
+    depends_on:
+      - db
+    #entrypoint: php artisan migrate && php artisan serve
     volumes:
       - ./events:/var/www/html
     networks:
       - events
+    
   db:
     image: mysql:8.0
     container_name: events_db
@@ -26,18 +27,8 @@ services:
       MYSQL_PASSWORD: P@ssw0rd
       MYSQL_DB_HOST: db
       MYSQL_DATABASE: laravel
-  
-  nginx:
-    image: nginx
-    container_name: events_nginx
-    ports:
-      - "8001:80"
-    volumes:
-      - ./events:/var/www/html
-      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
     networks:
       - events
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: events_phpmyadmin
@@ -45,8 +36,9 @@ services:
       - "8005:80"
     environment:
       MYSQL_ROOT_PASSWORD: P@ssw0rd
-      MYSQL_USER: events_user
+      MYSQL_USER: root
       MYSQL_PASSWORD: P@ssw0rd
-
+    networks:
+      - events
 networks:
   events:
